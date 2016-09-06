@@ -1,113 +1,136 @@
-// create objects for student search section on the top 
-var lastSheetIndex = 1;
-var numberStudentsPerPage = 10;
+// Decided to use jQuery after all. Way easier and I don't want to martyr myself over this project. 
 
-// first I create the elemebts on the top. The button and the text area. 
-var pageHeader = document.querySelector(".page-header");
-
-var studentSeach = document.createElement("div");
-studentSeach.className = "student-search";
-
-var searchInput = document.createElement("input");
-searchInput.placeholder = "Search for students..."
-searchInput.id = "search"; // I added this ID.
-
-var searchButtton = document.createElement("button");
-searchButtton.innerHTML = "Search";
+// Global Variables
+var htmlPage = $(".page");
+var numberOfStudentsPerPage = 10;
+var nodeUListOfStudents = $(".student-list");
+var nodeListOfStudents = $(".student-item");
+var arrayListOfStudents = $.makeArray(nodeListOfStudents);
 
 
-pageHeader.appendChild(studentSeach);
-studentSeach.appendChild(searchInput);
-studentSeach.appendChild(searchButtton);
 
+// function to find the number of students that match
+var numberOfStudentsThatMatch = function(arrayListOfStudents){
+	return arrayListOfStudents.length
+}
 
-// // create objects for pagination pagination buttons on the bottom. 
+// function which clears the page of all students
+var clearPage = function(nodeListOfStudents) {
+	$(".student-item").remove();
+}
 
-var page = document.querySelector(".page");
+clearPage(nodeListOfStudents);
 
-var pagination = document.createElement("div");
-pagination.className = "pagination";
-
-var paginationList = document.createElement("ul");
-paginationList.id = "buttons";
-
-page.appendChild(pagination);
-pagination.appendChild(paginationList);
-
-
-// Create the list of students. I still don't know what this is called? is it an object? What is it?
-// this are global variables which will be used for the list and for buttons. 
-var studentListObject = document.querySelectorAll(".student-item");
-var numberOfStudents = studentListObject.length;
-// this part will go into a function which loops and makes the buttons.
-
-
-// This is the function which hides the previously unhidden li's and unhides the new li's
-var paginate = function(xxxx, startUnhideIndex) {
-
-	var numberOfButtons = Math.ceil(54 / numberStudentsPerPage);
-	for (var i = lastSheetIndex; i < lastSheetIndex + numberStudentsPerPage && i < numberOfStudents; i++) {
-		studentListObject[i].style.display = "none"
+var hideWhatIsNotOnPage = function(arrayListOfStudents, numberOfStudentsPerPage, currentPage){
+	for (var i = 0; i < arrayListOfStudents.length; i++){
+		nodeUListOfStudents.append($(arrayListOfStudents[i]));
+	}
+	var firstSliceStart = 0;
+	var firstSliceEnd;
+	var showSliceStart;
+	var showSliceEnd;
+	var endSliceStart;
+	var endSliceEnd = arrayListOfStudents.length;
+	if (currentPage ===  1){
+		firstSliceEnd = 0;
+		showSliceStart = 0;
+		showSliceEnd = numberOfStudentsPerPage;
+		endSliceStart = numberOfStudentsPerPage;
+	} else {
+		firstSliceEnd = (currentPage - 1) * numberOfStudentsPerPage;
+		showSliceStart = firstSliceEnd;
+		showSliceEnd = showSliceStart + numberOfStudentsPerPage;
+		endSliceStart = showSliceEnd;
 	}
 
-	for (var i = startUnhideIndex; i < startUnhideIndex + numberStudentsPerPage && i < numberOfStudents; i++) {
-		studentListObject[i].style.display = "list-item";
-	}
+	var startSlice = arrayListOfStudents.slice(firstSliceStart, firstSliceEnd);
+
+		startSlice.forEach(function(student){
+
+			console.log("first slice");
+			$(student).hide();
+
+		});
+	var showSlice = arrayListOfStudents.slice(showSliceStart, showSliceEnd);
+
+		showSlice.forEach(function(student) {
+			console.log("show slice");
+			$(student).show();
+
+		});
+	var endSlice = arrayListOfStudents.slice(endSliceStart, endSliceEnd)
+
+		endSlice.forEach(function(student){
+			console.log("end slice");
+			$(student).hide();
+
+		});
+}
+
+hideWhatIsNotOnPage(arrayListOfStudents, 10, 1);
+
+
+
+
+// This function constructs the pagination buttons on the bottom
+
+var constructPaginationButtons = function(arrayListOfStudents, numberOfStudentsPerPage) {
 	
-	lastSheetIndex = startUnhideIndex;
-	return numberOfButtons;
-}
+	var numberOfStudents = numberOfStudentsThatMatch(arrayListOfStudents);
+	var numberOfPaginationButtons = Math.ceil(numberOfStudents / numberOfStudentsPerPage);
 
-
-// this is a function which creates the pagination buttons. 
-var createPaginationButtons = function(numberButtons) {
-	for (var i = 1; i <= numberButtons; i++) {
-		var listItem = document.createElement("li");
-		var anchorItem = document.createElement("a");
-		if (i === 1){
-			anchorItem.className = "active";
-		}
-		anchorItem.href = "#";
-		anchorItem.addEventListener("click", paginationButtonsClicked);
-		anchorItem.innerHTML = i;
-		paginationList.appendChild(listItem);
-		listItem.appendChild(anchorItem);
+	htmlPage.append("<div class='pagination'><ul></ul></div>");
+	for (var i = 1; i <= numberOfPaginationButtons; i++) {
+		$(".pagination").append("<li><a> " + i + " </a></li>")
+		
 	}
+	$(".pagination a").click(paginationclick);
+	$(".pagination a:first").addClass("active");
 }
 
-// This is the function which is called when the pagination buttons are clicked. 
-var paginationButtonsClicked = function(){
-	var startUnhideIndex = (this.innerHTML - 1) * numberStudentsPerPage;
-	paginate(studentListObject, startUnhideIndex);
+var paginationclick = function() {
+	currentPage = $(this).text();
+	$(".pagination li a").removeClass("active");
+	$(this).addClass("active");
+
+	hideWhatIsNotOnPage(arrayListOfStudents, numberOfStudentsPerPage, currentPage);
+}
+
+// This function builds the search feature 
+
+var constructSearchFeature = function() {
+	$(".page-header").append("<div class='student-search'><input placeholder='Search by name or email...'><button>Seach Students</button>");
+
+}
+
+var revealSearch = function() {
+	console.log("clicked");
+	console.log($(".page-header .student-search input"));
 }
 
 
 
+constructPaginationButtons(arrayListOfStudents, numberOfStudentsPerPage);
+constructSearchFeature();
 
-// Create variables for the search
-var searchField = document.querySelector("#search");
-
-// This sets the event and calls the function. 
-searchField.onkeyup  = function(event) {
-	mySearchFunction(studentListObject);
-}
-
-// // this is the function which creates the object for pagination 
+$("button").click(revealSearch);
 
 
-var mySearchFunction =	function(studentListObject){
-		for (var i = 0; i < studentListObject.length; i++) {
-			var name = studentListObject[i].children['0'].children['1'].innerHTML;
-			 console.log(name); // this prints the names to the console, so I know this works. 
+// this is the keyup function which activates the search
+var keyup = function() {
+	var searchValue = $(this).val();
+	console.log(searchValue);
+	var searchArray = [];
+	arrayListOfStudents.forEach(function(student){
+		var nameValue = $(student).find("h3").text().toLowerCase();
+		var emailValue = $(student).find(".email").text().toLowerCase();
+		console.log(nameValue);
+		console.log(emailValue);
+		if (nameValue.indexOf(searchValue) !== -1){
+			console.log("found");
 		}
-		// use logic and regex to remove li's which don't meet search. 
-		// I don't know how to do this.
-		// Once this studentListObject is reduced, then call line 113 again but with new list
-		// I have spent an ENORMOUS amount of time screwing around with this. 
-	}
+	})
+	
+}
 
-
-
-
-// this start the process
-createPaginationButtons(paginate(studentListObject, lastSheetIndex - 1));
+$("input").keyup(keyup);

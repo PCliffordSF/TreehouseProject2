@@ -32,6 +32,8 @@ body{
       border: 1px solid #eaeaea;
       padding: 8px 15px;
       font-size: 14px;
+      /*added by me*/
+      /*display: none; */
     }
 
     .page-header .student-search button{
@@ -40,7 +42,8 @@ body{
       padding: 8px 15px;
       font-size: 14px;
       background-color: #4ba6c3;
-      color: #fff
+      color: #fff;
+      cursor: pointer;
     }
 
 .student-list{}
@@ -49,7 +52,6 @@ body{
     margin: 0 0 20px 0;
     padding: 0 0 20px 0;
     border-bottom: 1px solid #eaeaea;
-    display: none;
   }
 
     .student-details{
@@ -117,5 +119,11 @@ body{
     .pagination li a:hover{
       background-color: #4ba6c3;
       color: #fff;
+      cursor: pointer;
     }
 
+    /*added css by me*/
+
+.myclass {
+  display: block;
+}
