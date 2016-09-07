@@ -7,22 +7,27 @@ var nodeUListOfStudents = $(".student-list");
 var nodeListOfStudents = $(".student-item");
 var arrayListOfStudents = $.makeArray(nodeListOfStudents);
 
-
-
-// function to find the number of students that match
+// function to find the number of students that are relevant 
 var numberOfStudentsThatMatch = function(arrayListOfStudents){
 	return arrayListOfStudents.length
 }
 
 // function which clears the page of all students
-var clearPage = function(nodeListOfStudents) {
+var clearPage = function() {
 	$(".student-item").remove();
 }
 
-clearPage(nodeListOfStudents);
+// function which clears all the buttons
+var clearPaginationButtons = function(){
+	$(".pagination").remove();
+}
 
-var hideWhatIsNotOnPage = function(arrayListOfStudents, numberOfStudentsPerPage, currentPage){
-	for (var i = 0; i < arrayListOfStudents.length; i++){
+// this is the function which paginates the page
+var paginatePage = function(arrayListOfStudents, numberOfStudentsPerPage, currentPage){
+	clearPage();
+
+	var arrayLength = numberOfStudentsThatMatch(arrayListOfStudents);
+	for (var i = 0; i < arrayLength; i++){
 		nodeUListOfStudents.append($(arrayListOfStudents[i]));
 	}
 	var firstSliceStart = 0;
@@ -46,36 +51,25 @@ var hideWhatIsNotOnPage = function(arrayListOfStudents, numberOfStudentsPerPage,
 	var startSlice = arrayListOfStudents.slice(firstSliceStart, firstSliceEnd);
 
 		startSlice.forEach(function(student){
-
-			console.log("first slice");
 			$(student).hide();
-
 		});
+
 	var showSlice = arrayListOfStudents.slice(showSliceStart, showSliceEnd);
 
 		showSlice.forEach(function(student) {
-			console.log("show slice");
 			$(student).show();
-
 		});
+
 	var endSlice = arrayListOfStudents.slice(endSliceStart, endSliceEnd)
 
 		endSlice.forEach(function(student){
-			console.log("end slice");
 			$(student).hide();
-
 		});
 }
 
-hideWhatIsNotOnPage(arrayListOfStudents, 10, 1);
-
-
-
-
 // This function constructs the pagination buttons on the bottom
-
 var constructPaginationButtons = function(arrayListOfStudents, numberOfStudentsPerPage) {
-	
+	clearPaginationButtons();
 	var numberOfStudents = numberOfStudentsThatMatch(arrayListOfStudents);
 	var numberOfPaginationButtons = Math.ceil(numberOfStudents / numberOfStudentsPerPage);
 
@@ -88,49 +82,46 @@ var constructPaginationButtons = function(arrayListOfStudents, numberOfStudentsP
 	$(".pagination a:first").addClass("active");
 }
 
+// must add variable to pagination Click so it knows which array to add event listener to.
 var paginationclick = function() {
 	currentPage = $(this).text();
 	$(".pagination li a").removeClass("active");
 	$(this).addClass("active");
 
-	hideWhatIsNotOnPage(arrayListOfStudents, numberOfStudentsPerPage, currentPage);
+	paginatePage(arrayListOfStudents, numberOfStudentsPerPage, currentPage);
 }
-
-// This function builds the search feature 
-
-var constructSearchFeature = function() {
-	$(".page-header").append("<div class='student-search'><input placeholder='Search by name or email...'><button>Seach Students</button>");
-
-}
-
-var revealSearch = function() {
-	console.log("clicked");
-	console.log($(".page-header .student-search input"));
-}
-
-
-
-constructPaginationButtons(arrayListOfStudents, numberOfStudentsPerPage);
-constructSearchFeature();
-
-$("button").click(revealSearch);
-
 
 // this is the keyup function which activates the search
 var keyup = function() {
-	var searchValue = $(this).val();
-	console.log(searchValue);
 	var searchArray = [];
+	var counter = 0;
+	var searchValue = $(this).val();
 	arrayListOfStudents.forEach(function(student){
 		var nameValue = $(student).find("h3").text().toLowerCase();
 		var emailValue = $(student).find(".email").text().toLowerCase();
-		console.log(nameValue);
-		console.log(emailValue);
+
 		if (nameValue.indexOf(searchValue) !== -1){
-			console.log("found");
+			searchArray.push(student)
+			counter += 1;
 		}
-	})
-	
+
+	});
+
+	paginatePage(searchArray, numberOfStudentsPerPage, 1)
+	constructPaginationButtons(searchArray, numberOfStudentsPerPage);
 }
 
+// construct the first page
+paginatePage(arrayListOfStudents, 10, 1);
+// construct the pagination buttons
+constructPaginationButtons(arrayListOfStudents, numberOfStudentsPerPage);
+// construct the search features
+
+// This function builds the search feature 
+var constructSearchFeature = function() {
+	$(".page-header").append("<div class='student-search'><input placeholder='Search by name or email...'><button>Seach Students</button>");
+}
+
+constructSearchFeature();
+// add event listener to search field
 $("input").keyup(keyup);
