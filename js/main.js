@@ -99,7 +99,6 @@ var paginationclick = function() {
 var createSearchArray = function() {
 	var searchArray = [];
 	var searchValue = $("input").val();
-	console.log(searchValue);
 	arrayListOfStudents.forEach(function(student){
 		var nameValue = $(student).find("h3").text().toLowerCase();
 		var emailValue = $(student).find(".email").text().toLowerCase();
@@ -113,30 +112,47 @@ var createSearchArray = function() {
 	// constructPaginationButtons(searchArray, numberOfStudentsPerPage);
 }
 
-// construct the first page
-paginatePage(arrayListOfStudents, 10, 1);
-// construct the pagination buttons
-constructPaginationButtons(arrayListOfStudents, numberOfStudentsPerPage);
-// construct the search features
+
 
 // This function builds the search feature 
 var constructSearchFeature = function() {
-	$(".page-header").append("<div class='student-search'><input placeholder='Search by name or email...'><button>Seach Students</button>");
+	$(".page-header").append("<div class='student-search'><input placeholder='Search by name or email...'><button>Search Students</button>");
 }
 
 constructSearchFeature();
 
 var keyup = function() {
 	var searchArray = createSearchArray();
-	console.log(searchArray);
 	paginatePage(searchArray, numberOfStudentsPerPage, 1)
 	constructPaginationButtons(searchArray, numberOfStudentsPerPage);
 }
 // add event listener to search field
 
+var setFocus = function(){
+	if ( $("button").text() === "Search Students" ) {
+		$("button").text("Quit Search");
+		$("input").focus();
+	} else {
+		$("button").text("Search Students");
+		$("input").val("");
+		paginatePage(arrayListOfStudents, 10, 1);
+		constructPaginationButtons(arrayListOfStudents, numberOfStudentsPerPage);
+	}
+}
+
+var setButton = function(){
+	$("button").text("Quit Search");
+}
+
+// construct the first page
+paginatePage(arrayListOfStudents, 10, 1);
+// construct the pagination buttons
+constructPaginationButtons(arrayListOfStudents, numberOfStudentsPerPage);
+// construct the search features
 
 $("input").keyup(keyup);
-$("button").click();
+$("input").focus(setButton);
+$("button").click(setFocus);
 
 
 
