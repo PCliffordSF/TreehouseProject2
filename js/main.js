@@ -73,6 +73,8 @@ var constructPaginationButtons = function(arrayListOfStudents, numberOfStudentsP
 	var numberOfStudents = numberOfStudentsThatMatch(arrayListOfStudents);
 	var numberOfPaginationButtons = Math.ceil(numberOfStudents / numberOfStudentsPerPage);
 
+	if (numberOfPaginationButtons > 1) {
+		
 	htmlPage.append("<div class='pagination'><ul></ul></div>");
 	for (var i = 1; i <= numberOfPaginationButtons; i++) {
 		$(".pagination").append("<li><a> " + i + " </a></li>")
@@ -80,35 +82,35 @@ var constructPaginationButtons = function(arrayListOfStudents, numberOfStudentsP
 	}
 	$(".pagination a").click(paginationclick);
 	$(".pagination a:first").addClass("active");
+	}
+
 }
 
 // must add variable to pagination Click so it knows which array to add event listener to.
 var paginationclick = function() {
+	var searchArray = createSearchArray();
 	currentPage = $(this).text();
 	$(".pagination li a").removeClass("active");
 	$(this).addClass("active");
-
-	paginatePage(arrayListOfStudents, numberOfStudentsPerPage, currentPage);
+	paginatePage(searchArray, numberOfStudentsPerPage, currentPage);
 }
 
 // this is the keyup function which activates the search
-var keyup = function() {
+var createSearchArray = function() {
 	var searchArray = [];
-	var counter = 0;
-	var searchValue = $(this).val();
+	var searchValue = $("input").val();
+	console.log(searchValue);
 	arrayListOfStudents.forEach(function(student){
 		var nameValue = $(student).find("h3").text().toLowerCase();
 		var emailValue = $(student).find(".email").text().toLowerCase();
 
 		if (nameValue.indexOf(searchValue) !== -1){
-			searchArray.push(student)
-			counter += 1;
+			searchArray.push(student);
 		}
-
 	});
-
-	paginatePage(searchArray, numberOfStudentsPerPage, 1)
-	constructPaginationButtons(searchArray, numberOfStudentsPerPage);
+	return searchArray;
+	// paginatePage(searchArray, numberOfStudentsPerPage, 1)
+	// constructPaginationButtons(searchArray, numberOfStudentsPerPage);
 }
 
 // construct the first page
@@ -123,5 +125,38 @@ var constructSearchFeature = function() {
 }
 
 constructSearchFeature();
+
+var keyup = function() {
+	var searchArray = createSearchArray();
+	console.log(searchArray);
+	paginatePage(searchArray, numberOfStudentsPerPage, 1)
+	constructPaginationButtons(searchArray, numberOfStudentsPerPage);
+}
 // add event listener to search field
+
+
 $("input").keyup(keyup);
+$("button").click();
+
+
+
+
+
+// var keyup = function() {
+// 	var searchArray = [];
+// 	var counter = 0;
+// 	var searchValue = $(this).val();
+// 	arrayListOfStudents.forEach(function(student){
+// 		var nameValue = $(student).find("h3").text().toLowerCase();
+// 		var emailValue = $(student).find(".email").text().toLowerCase();
+
+// 		if (nameValue.indexOf(searchValue) !== -1){
+// 			searchArray.push(student)
+// 			counter += 1;
+// 		}
+
+// 	});
+
+// 	paginatePage(searchArray, numberOfStudentsPerPage, 1)
+// 	constructPaginationButtons(searchArray, numberOfStudentsPerPage);
+// }

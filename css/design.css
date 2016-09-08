@@ -33,8 +33,11 @@ body{
       padding: 8px 15px;
       font-size: 14px;
       /*added by me*/
-      /*display: none; */
     }
+
+    .searchbox-open{
+       min-width: 75px;
+      }
 
     .page-header .student-search button{
       border-radius: 5px;
