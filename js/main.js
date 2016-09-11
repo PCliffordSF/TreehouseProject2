@@ -92,18 +92,16 @@ var paginationclick = function() {
 // this is the keyup function which activates the search
 var createSearchArray = function() {
 	var searchArray = [];
-	var firstNameSearchValue = '^' + $("input").val();
-	var lastNameSearchValue = '\\'  + 's' + $("input").val();
+	var firstNameSearchValue = $("input").val().toLowerCase();
 	var emailSearchValue = '^' + $("input").val();
 	arrayListOfStudents.forEach(function(student){
 		
 		var nameValue = $(student).find("h3").text().toLowerCase();
 		var emailValue = $(student).find("span").text().toLowerCase();
 		var firstNamePattern = new RegExp(firstNameSearchValue);
-		var lastNamePattern = new RegExp(lastNameSearchValue);
 		var emailPattern = new RegExp(emailSearchValue);
 
-		if (firstNamePattern.test(nameValue) || lastNamePattern.test(nameValue) || emailPattern.test(emailValue) || $("input").val() === ""){
+		if (firstNamePattern.test(nameValue) || emailPattern.test(emailValue) || $("input").val() === ""){
 			searchArray.push(student);
 		}
 	});
